@@ -117,6 +117,7 @@ func getImageFromURl(url, folder string) error {
 	}
 
 	file, err := os.Create(filepath.Join(folder, path.Base(url)))
+	defer file.Close()
 	if err != nil {
 		return err
 	}
