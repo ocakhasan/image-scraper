@@ -23,10 +23,7 @@ func extract(url string) ([]string, error) {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		err := resp.Body.Close()
-		if err != nil {
-			return nil, err
-		}
+		defer resp.Body.Close()
 		return nil, fmt.Errorf("getting %s: %s", url, resp.Status)
 	}
 
@@ -84,12 +81,7 @@ func GetImages(url, folder string) error {
 			fmt.Printf("Folder %s already exists. Images will be downladed in that folder.\n", folder)
 		}
 	}
-	/*
-		if err := os.Mkdir(folder, 0700); err != nil {
-			return fmt.Errorf("error while creating folder %s : %v", folder, err)
 
-		}
-	*/
 	for _, image := range images {
 		err := getImageFromURl(image, folder)
 		if err != nil {
@@ -120,10 +112,7 @@ func getImageFromURl(url, folder string) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		err := resp.Body.Close()
-		if err != nil {
-			return err
-		}
+		defer resp.Body.Close()
 		return fmt.Errorf("got %d in %s", resp.StatusCode, url)
 	}
 
