@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"golang.org/x/net/html"
 )
@@ -82,12 +83,22 @@ func GetImages(url, folder string) error {
 		}
 	}
 
+	outputChannel := make(chan string, len(images))
+
+	var wg sync.WaitGroup
 	for _, image := range images {
-		err := getImageFromURl(image, folder)
-		if err != nil {
-			return fmt.Errorf("error in %s: %v", image, err)
-		}
-		fmt.Printf("Image %s is done\n", path.Base(image))
+		image := image
+		wg.Add(1)
+		go func() {
+			getImageFromURl(image, folder, outputChannel, &wg)
+		}()
+	}
+
+	wg.Wait()
+	close(outputChannel)
+
+	for output := range outputChannel {
+		fmt.Print(output)
 	}
 	return nil
 }
@@ -105,25 +116,27 @@ func returnUniqueImages(images []string) []string {
 	return uniqueSlice
 }
 
-func getImageFromURl(url, folder string) error {
+func getImageFromURl(url, folder string, outputChannel chan<- string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	imageName := path.Base(url)
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		defer resp.Body.Close()
-		return fmt.Errorf("got %d in %s", resp.StatusCode, url)
+		outputChannel <- fmt.Sprintf("got %d in %s", resp.StatusCode, url)
 	}
 
-	file, err := os.Create(filepath.Join(folder, path.Base(url)))
-	defer file.Close()
+	file, err := os.Create(filepath.Join(folder, imageName))
 	if err != nil {
-		return err
+		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
 	}
+	defer file.Close()
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
-		return err
+		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
 	}
-	return nil
+	outputChannel <- fmt.Sprintf("Image %s is done\n", imageName)
 }
