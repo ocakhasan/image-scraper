@@ -87,11 +87,10 @@ func GetImages(url, folder string) error {
 
 	var wg sync.WaitGroup
 	for _, image := range images {
-		image := image
 		wg.Add(1)
-		go func() {
+		go func(image string) {
 			getImageFromURl(image, folder, outputChannel, &wg)
-		}()
+		}(image)
 	}
 
 	wg.Wait()
