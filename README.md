@@ -1,6 +1,6 @@
-# Image Scraper
+# Parallel Image Scraper
 
-`image-scraper` scrapes images from given website to given folder in parallel. It downloads all the images quickly because of the concurrency.
+`image-scraper` scrapes images from given website to given folder in parallel.
 
 ## USAGE
 
@@ -24,6 +24,3 @@ Image tia.png is done
 ```
 
 It will download images from `google.com` into `google` folder.
-
-## TODOS
-- [x] make it parallel
