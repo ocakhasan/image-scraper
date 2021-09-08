@@ -18,9 +18,9 @@ Then you need to build the project.
 Then you can use the program as below.
 ```
 > ./image-scraper -w 'google.com' -f google
-Folder google does not exist. Creating one...
-Image googlelogo_white_background_color_272x92dp.png is done
-Image tia.png is done
+There are 2 images in google.com
+- Image tia.png is done
+- Image googlelogo_white_background_color_272x92dp.png is done
 ```
 
 It will download images from `google.com` into `google` folder.

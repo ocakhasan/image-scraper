@@ -66,6 +66,9 @@ func forEachNode(n *html.Node, pre, post func(n *html.Node)) {
 }
 
 func GetImages(url, folder string) error {
+	if strings.TrimSpace(url) == "" || strings.TrimSpace(folder) == "" {
+		return fmt.Errorf("folder or website is not set. Set values with --f and --w flags respectively")
+	}
 	images, err := extract(url)
 	if err != nil {
 		return err
@@ -74,15 +77,13 @@ func GetImages(url, folder string) error {
 	if _, err := os.Stat(folder); err != nil {
 		if os.IsNotExist(err) {
 			// file does not exist
-			fmt.Printf("Folder %s does not exist. Creating one...\n", folder)
 			if err := os.Mkdir(folder, 0700); err != nil {
 				return fmt.Errorf("error while creating folder %s : %v", folder, err)
 			}
-		} else {
-			fmt.Printf("Folder %s already exists. Images will be downladed in that folder.\n", folder)
 		}
 	}
 
+	fmt.Printf("There are %d images in %v\n", len(images), url)
 	outputChannel := make(chan string, len(images))
 
 	var wg sync.WaitGroup
@@ -137,5 +138,5 @@ func getImageFromURl(url, folder string, outputChannel chan<- string, wg *sync.W
 	if err != nil {
 		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
 	}
-	outputChannel <- fmt.Sprintf("Image %s is done\n", imageName)
+	outputChannel <- fmt.Sprintf("- Image %s is done\n", imageName)
 }
