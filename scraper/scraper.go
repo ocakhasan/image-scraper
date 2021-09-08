@@ -142,5 +142,5 @@ func getImageFromURl(url, folder string, outputChannel chan<- string, wg *sync.W
 		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
 		return
 	}
-	outputChannel <- fmt.Sprintf("- Image %s is done\n", imageName)
+	outputChannel <- fmt.Sprintf("- Image %s is downloaded\n", imageName)
 }
