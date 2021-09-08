@@ -122,21 +122,25 @@ func getImageFromURl(url, folder string, outputChannel chan<- string, wg *sync.W
 	resp, err := http.Get(url)
 	if err != nil {
 		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		defer resp.Body.Close()
 		outputChannel <- fmt.Sprintf("got %d in %s", resp.StatusCode, url)
+		return
 	}
 
 	file, err := os.Create(filepath.Join(folder, imageName))
 	if err != nil {
 		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
+		return
 	}
 	defer file.Close()
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
 		outputChannel <- fmt.Sprintf("Error in %s : %s\n", imageName, err.Error())
+		return
 	}
 	outputChannel <- fmt.Sprintf("- Image %s is done\n", imageName)
 }
