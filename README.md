@@ -4,20 +4,15 @@
 
 ## USAGE
 
-First you need to clone the project.
 ```
-> git clone https://github.com/ocakhasan/image-scraper.git
-> cd image-scraper
+go get github.com/ocakhasan/image-scraper
 ```
 
-Then you need to build the project.
-```
-> go build
-```
+It will generate a binary program in your `$GOBIN` folder.
 
 Then you can use the program as below.
 ```
-> ./image-scraper -w 'google.com' -f google
+> image-scraper -w 'google.com' -f google
 There are 2 images in google.com
 - Image tia.png is downloaded
 - Image googlelogo_white_background_color_272x92dp.png is downloaded
